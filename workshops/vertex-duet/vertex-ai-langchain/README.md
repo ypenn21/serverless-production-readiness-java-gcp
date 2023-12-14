@@ -14,9 +14,9 @@ sdk install java 21.0.1-graal
 ## Clone the code:
 ```shell
 git clone https://github.com/GoogleCloudPlatform/serverless-production-readiness-java-gcp.git
-cd genai/image-vision-vertex-langchain/
+cd workshops/vertex-duet/vertex-ai-langchain-start
 
-git checkout java21
+git checkout vertex
 ```
 
 ## Install the maven wrapper
@@ -60,8 +60,8 @@ vertex-ai-langchain-jit                                 latest                12
 
 Start the Docker images locally. The image naming conventions indicate whether the image was built by Maven|Gradle and contains the JIT|NATIVE version
 ```shell
-docker run --rm vertex-ai-langchain-jit
-docker run --rm vertex-ai-langchain-native
+docker run --rm -p8080:8080 vertex-ai-langchain-jit
+docker run --rm -p8080:8080 vertex-ai-langchain-native
 ```
 
 Retrieve the Project ID, as it will be required for the next GCP operations

@@ -72,12 +72,8 @@ public class EventController {
   private static final List<String> requiredFields = Arrays.asList("ce-id", "ce-source", "ce-type",
       "ce-specversion");
 
-  private EventService eventService;
-
   @Autowired
-  public void setEventService(EventService eventService) {
-    this.eventService = eventService;
-  }
+  private EventService eventService;
 
   @PostConstruct
   public void init() {
