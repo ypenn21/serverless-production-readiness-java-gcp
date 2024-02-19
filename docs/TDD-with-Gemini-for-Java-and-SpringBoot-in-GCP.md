@@ -6,9 +6,9 @@ app, review the code, then help add new functionality.
 I like to follow a test-driven development approach, and I want to explore how Duet can help me in my work.
 
 ## What's the Ask
-The Quotes app is missing an endpoint to retrieve book information by book name.
+The Quotes app requires a new endpoint to retrieve book information by book name.
 This endpoint should respond on the “/quotes/book/{book}” path. 
-The ask is to implement this endpoint.
+The ask is to implement this particular endpoint.
 
 ## Before you start
 I'll be using Duet with Cloud Code in IntelliJ on my Mac, however you can use Duet from other IDEs supported by Cloud Code, 
@@ -17,7 +17,7 @@ from Google Cloud Console.
 
 The [Duet](https://cloud.google.com/Duet-ai/docs/developers/overview) page provides details on how to get setup with Duet. 
 
-Once we have Duet set up, we'll open a Terminal window and install the pre-requisites for the work.
+Once we have Duet set up, open a Terminal window and install the pre-requisites for the work.
 
 The Quotes application uses Java 21. If you do not have it installed, it's an easy setup using [SDKMan](https://sdkman.io/):
 ```shell
@@ -35,12 +35,13 @@ gcloud services enable cloudbuild.googleapis.com
 gcloud services enable run.googleapis.com
 gcloud services enable logging.googleapis.com 
 ```
-The Quotes app
-Let's clone the Github repo for Quotes and switch to the /services/quotes folder, then open the codebase in the IDE, as well as a terminal window:
+
+## The Quotes app
+Let's clone the Github repo for Quotes and switch to the /services/quotes folder, then open the codebase in the IDE, as well as a new terminal window:
 ```shell
 git clone https://github.com/GoogleCloudPlatform/serverless-production-readiness-java-gcp.git && cd serverless-production-readiness-java-gcp/services/quotes
 ```
-We can validate that the project is set; and set it otherwise:
+We can validate that the project is set, and set it otherwise:
 ```shell
 # get project 
 gcloud config list
@@ -63,9 +64,9 @@ Duet can be used to explain the app, perform code reviews, suggest changes and t
 Let's open the QuoteApplication class, then type the following prompt in the Duet Chat window and observe the response:
 
 __Prompt__
-```
-I want to get details about the QuotesApplication; please provide a detailed overview of the QuotesApplication
-```
+
+> I want to get details about the QuotesApplication; please provide a detailed overview of the QuotesApplication
+
 __Response__
 
 Duet will respond with a detailed overview of the QuotesApplication. Remember that responses are non-deterministic, 
@@ -120,7 +121,8 @@ Here is an example of how the code could be improved:
 ## Use TDD with Duet to add business logic
 
 The Quotes app is missing an endpoint to retrieve book information by book name. This endpoint should respond on the “/quotes/book/{book}” path. 
-Let’s use a test-driven approach to add this functionality, starting from writing an application test.
+
+We'll use a test-driven approach to add this functionality, starting from writing an application test.
 
 Start by asking Duet to recommend which types of tests you need to write:
 > Which types of tests should I be writing for the QuoteController
@@ -168,19 +170,19 @@ Let's open the **_/src/test/java/com/example/quotes_** folder and observe that s
 * QuotesRepositoryTest
 * QuotesApplicationNetworkFailuresTests
 
-To add the quote retrieval by book name functionality, we start writing code in true TDD fashion by adding tests 
+To add the quote retrieval by book name functionality, start writing code in true TDD fashion by adding tests 
 to both the QuotesControllerTest (for the endpoint) and QuotesRepositoryTest (for data retrieval from the db).
 
 **Step 1: Generate the web controller test first**
 Open the **QuotesControllerTest** class in the **_com.example.quotes.web_** package
 
 In the code, we add the comment, say towards the end of the file and press Enter
-```
+```java
 // Answer as a Software Engineer with expertise in Java. Create a test for the QuotesController for a method getByBook which responds at the HTTP endpoint /quotes/book/{book} and retrieves a quote from the book The Road
 ```
-We then click the Duet SmartAction and select “Generate code” or use keys to generate cod: (CTRL+Enter in VSCode, OPTION+Shift+\ in IntelliJ).
+Click the Duet SmartAction and select “Generate code” or use keys to generate cod: (CTRL+Enter in VSCode, OPTION+Shift+\ in IntelliJ).
 Duet will make the suggestion:
-```shell
+```java
   @Test
   @DisplayName("Test returns Quotes by Book")
   void shouldReturnQuoteByBook() throws Exception {
@@ -190,21 +192,21 @@ Duet will make the suggestion:
         .andExpect(jsonPath("$[0].book", Matchers.equalTo("The Road")));
   }
 ```
-We can accept the suggestion, if it meets our requirements, with Tab or click Accept.
+Accept the suggestion, if it meets your requirements, with Tab or click Accept.
 
 In the Terminal window, run the command:
-```
+```shell
 ./mvnw clean verify
 ```
 We observe that the test fails, as expected, with a ‘404’ error, as the business logic has not been implemented:
-```
+```java 
 [ERROR] Failures: 
 [ERROR]   QuotesControllerTest.shouldReturnQuoteByBook:94 Status expected:&lt;200> but was:&lt;404>
 ...
 ```
 **Step 2: Generate controller code**
 
-Let’s add the missing controller method getByBook. Open the QuoteController class. Add the following comment towards the end of the class:
+Add the missing controller method getByBook. Open the QuoteController class. Add the following comment towards the end of the class:
 ```
 // generate a getByBook method which responds at the HTTP endpoint /quotes/book/{book} and retrieves a quote by book name; use the QuoteService class to retrieve the book by name, as a String
 ```
@@ -231,14 +233,14 @@ Duet will respond with a code block along the lines of:
         }
     }
 ```
-Note that the code is missing the ‘getByBook()’ implementation in the QuoteService class, which leads you to the next step in the implementation.
+Note that the code is missing the ‘getByBook()’ implementation in the QuoteService class, which leads you to the next step of the implementation.
 
-**Step 3: Generate now repository access methods, starting again with a test**
+**Step 3: Generate now test methods for repository access**
 
-Let's open the QuoteService class and observe that the getByBook method is missing. 
-We generate a test for the service class first, then add methods to access the repository, and test it out.
+Open the QuoteService class and observe that the getByBook method is missing. 
+Generate a test for the service class first, then add methods to access the repository, and test it out.
 
-Let's open the QuotesRepositoryTest class and add the following comment towards the bottom of the class:
+Open the QuotesRepositoryTest class and add the following comment towards the bottom of the class:
 ```
 // generate a unit test for the getByBook method in the QuoteService; create a Quote in the QuoteService first then test the getByBook method against the new Quote
 ```
@@ -253,7 +255,8 @@ Observe that the generated code looks like:
 ```
 With the test implemented, it is time to implement the missing functionality in the QuoteRepository and the QuoteService class.
 
-We want to get a Quote by the book name, therefore need to add a findByBook method to the JPA repository class QuoteRepository, then allow the QuoteService to use this method. 
+The ask is to get a Quote by the book name, therefore need to add a findByBook method to the JPA repository class QuoteRepository, then allow the QuoteService to use this method. 
+
 Open the QuoteRepository class and add this comment towards the end of the class:
 ```
 // generate a find by book method which retrieves a quote by book name; use the native query syntax
@@ -262,10 +265,10 @@ Duet will generate code along the lines of:
 ```
   @Query( nativeQuery = true, value =
             "SELECT id,quote,author,book FROM quotes WHERE book = :book")
-    List<Quote> findByBook(String book);
+  List<Quote> findByBook(String book);
 ```
 
-With the repository method in place, we can generate the missing link, the getByBook method in the service class and test it out. 
+With the repository method in place, generate the missing link, the getByBook method in the service class and test it out. 
 Open the QuoteService class and add the comment:
 ```
 // add get by book method, use the QuoteRepository
@@ -291,7 +294,7 @@ Ask Duet to generate cURL commands to test the newly added functionality. Switch
 
 In the Duet chat window, we can prompt Duet to generate a test command:
 ```
-Generate a curl command for the /quotes/book endpoint for a local environment at port 8083 for the book "The Road"
+Generate a curl command for the /quotes/book endpoint for a local environment at port 8083 for the book "The Lord of the Rings"
 ```
 
 Duet will generate the cURL command, which we can run:
@@ -299,7 +302,7 @@ Duet will generate the cURL command, which we can run:
 curl -X GET http://localhost:8083/quotes/book/The%20Lord%20of%20the%20Rings
 ```
 
-Assume the command has not found a book and we wish to print the HTTP error code; prompt Duet with:
+While you can assume that the command has not found a book, we wish to print the HTTP error code and refine the prompt with the following:
 ```
 Update the curl command to print the HTTP response code
 ```
@@ -307,7 +310,7 @@ Run the updated command generated by Duet, which should return a 404:
 ```
 curl -X GET http://localhost:8083/quotes/book/The%20Lord%20of%20the%20Rings -o /dev/null -s -w '%{http_code}\n'
 ```
-Now update the prompt to generate a successful command:
+Now refine the prompt to generate a successful command:
 ```
 Update the command again to use the book "The Road"
 ```
@@ -318,14 +321,13 @@ curl -X GET http://localhost:8083/quotes/book/The%20Road -o /dev/null -s -w '%{h
 **Done!** with testing.
 
 ## Test our code in the Google Cloud Run
-If we wish to test our code in Cloud Run, we can follow the detailed Build and Deploy instructions in the source code's [README](https://github.com/GoogleCloudPlatform/serverless-production-readiness-java-gcp/tree/main/services/quotes#readme)
+To deploy and test the code in Cloud Run, follow the detailed Build and Deploy instructions in the  [README](https://github.com/GoogleCloudPlatform/serverless-production-readiness-java-gcp/tree/main/services/quotes#readme)
 
 ## What have we learned today
 In this blog post, I started from an existing app and used Duet to help me get started with an overview of the codebase, 
 perform code reviews, generate test code and business logic at different functionality levels and, last but not least, generate 
 cURL commands to test the added functionality. All of this, following my preferred test-driven development approach.
 
-It saved me time not only in generating code, but in the constant availability to generate the right cURL commands for testing when I forgot a parameter or suggesting areas of code improvements.
-It doesn't only save me time and search effort, but removes all these small interruptions from my workflow.
+It saved me time (and search effort) not only in generating code, or perform analysis. Duet was constantly available to generate the right cURL commands for testing when I forgot a parameter or suggested areas of code improvements. and removed a lot of these small interruptions from my workflow.
 
 For any questions or feedback, feel free to contact me on Twitter/X [@ddobrin](https://twitter.com/ddobrin).
